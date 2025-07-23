@@ -1,0 +1,7 @@
+fastapi
+python-dotenv
+google-generativeai
+uvicorn
+pydantic
+pydantic-settings
+reportlab
