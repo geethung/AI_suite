@@ -19,7 +19,7 @@ main_app.add_middleware(
 main_app.mount("/document-chatbot", document_chatbot_app)
 main_app.mount("/hr-bot", hr_bot_app)
 #main_app.mount("/meeting-summary", meeting_summary_app)
-#main_app.mount("/sop-generator", sop_generator_app)
+main_app.mount("/sop-generator", sop_generator_app)
 
 # Optionally, add a root endpoint
 @main_app.get("/")
