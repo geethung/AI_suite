@@ -20,8 +20,8 @@ llm = ChatGoogleGenerativeAI(
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 
-vectorstore_path = "vectorstore"
-doc_folder = "documents"
+vectorstore_path =  os.path.join(os.path.dirname(__file__), "documents")
+doc_folder =  os.path.join(os.path.dirname(__file__), "documents")
 os.makedirs(vectorstore_path, exist_ok=True)
 
 prompt_template = """
