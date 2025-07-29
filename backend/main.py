@@ -18,7 +18,7 @@ main_app.add_middleware(
 # Mount each sub-app under a different path
 main_app.mount("/document-chatbot", document_chatbot_app)
 main_app.mount("/hr-bot", hr_bot_app)
-#main_app.mount("/meeting-summary", meeting_summary_app)
+main_app.mount("/meeting-summary", meeting_summary_app)
 main_app.mount("/sop-generator", sop_generator_app)
 
 # Optionally, add a root endpoint

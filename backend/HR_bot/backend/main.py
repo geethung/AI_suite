@@ -14,6 +14,7 @@ app.add_middleware(
 
 @app.post("/chat")
 async def chat(query: str = Form(...)):
+    print("Received query:", query)
     answer = get_answer(query)
     return {"answer": answer}
 

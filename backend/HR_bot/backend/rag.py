@@ -11,19 +11,19 @@ load_dotenv()
 
 embedding = GoogleGenerativeAIEmbeddings(
     model="models/embedding-001",
-    google_api_key=os.getenv("GOOGLE_API_KEY")
+    google_api_key=os.getenv("GEMINI_API_KEY")
 )
 
 llm = ChatGoogleGenerativeAI(
     model="gemini-1.5-flash",
     temperature=0.2,
-    google_api_key=os.getenv("GOOGLE_API_KEY")
+    google_api_key=os.getenv("GEMINI_API_KEY")
 )
 
-vectorstore_path =  os.path.join(os.path.dirname(__file__), "documents")
+vectorstore_path =  os.path.join(os.path.dirname(__file__), "vectorstore")
 doc_folder =  os.path.join(os.path.dirname(__file__), "documents")
 os.makedirs(vectorstore_path, exist_ok=True)
-
+print("Vectorstore path:", vectorstore_path)
 prompt_template = """
 You are an AI assistant for a company. Use the following extracted context from HR and policy documents to answer the employee's question accurately, concisely, and politely.
 
@@ -44,7 +44,9 @@ QA_CHAIN_PROMPT = PromptTemplate(
 def build_vectorstore(text, filename):
     doc = Document(page_content=text, metadata={"source": filename})
     vs = FAISS.from_documents([doc], embedding)
-    vs.save_local(os.path.join(vectorstore_path, filename))
+    base_name = os.path.splitext(filename)[0]
+    vs.save_local(os.path.join(vectorstore_path, base_name))
+    #vs.save_local(os.path.join(vectorstore_path, filename.replace(".pdf", "")))
 
 def build_all_vectorstores():
     for filename in os.listdir(doc_folder):
@@ -55,15 +57,22 @@ def build_all_vectorstores():
 
 def load_vectorstore():
     stores = []
-    for dir in os.listdir(vectorstore_path):
-        store_path = os.path.join(vectorstore_path, dir)
-        if os.path.isdir(store_path):
+    print("dir", os.listdir(vectorstore_path))
+    for dir_name in os.listdir(vectorstore_path):
+        store_path = os.path.join(vectorstore_path, dir_name)
+        print("Loading vectorstore from:", store_path)
+        if os.path.isdir(store_path) and "index.faiss" in os.listdir(store_path):
             store = FAISS.load_local(store_path, embedding, allow_dangerous_deserialization=True)
             stores.append(store)
+            print("✅ Loaded:", store_path)
+        else:
+            print("❌ Skipped:", store_path)
     return stores
 
 def get_answer(query: str):
+    print("Query:", query)
     stores = load_vectorstore()
+    print("stores",stores)
     if not stores:
         return "No documents are indexed. Please check the /documents folder."
     merged = stores[0]
